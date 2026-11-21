@@ -1,5 +1,12 @@
 # 🕵️ Smart Page Watcher & Extractor
 
+<p align="left">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" alt="Playwright" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+</p>
+
 > A high-performance, intelligent web monitoring & data extraction tool built with **TypeScript**, **Playwright**, and **Node.js/Express**. It features an automated diff engine and a sleek **Glassmorphism Web Dashboard**.
 
 ---

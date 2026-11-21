@@ -1,6 +1,10 @@
 # GitHub Linguist Overrides
-# Exclude static frontend assets from language detection
+# Exclude public assets and markup so GitHub accurately identifies TypeScript
+public/* linguist-vendored
 public/** linguist-vendored
-*.html linguist-detectable=false
-*.css linguist-detectable=false
-*.js linguist-detectable=false
+*.html -linguist-detectable
+*.html linguist-vendored
+*.css -linguist-detectable
+*.css linguist-vendored
+*.js -linguist-detectable
+*.js linguist-vendored
