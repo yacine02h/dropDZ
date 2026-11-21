@@ -1,0 +1,35 @@
+{
+  "name": "page-watcher",
+  "version": "1.0.0",
+  "description": "Smart Page Watcher & Extractor — monitors web pages for changes using Playwright",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "ui": "ts-node src/api/server.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "watch": "ts-node --watch src/index.ts"
+  },
+  "keywords": [
+    "web-scraper",
+    "page-monitor",
+    "playwright",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^5.3.0",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
