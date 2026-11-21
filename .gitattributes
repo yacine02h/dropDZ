@@ -1,0 +1,4 @@
+# GitHub Linguist Overrides
+# Exclude static public frontend bundle from language stats so GitHub recognizes TypeScript as the primary language
+public/** linguist-vendored
+public/index.html linguist-detectable=false
