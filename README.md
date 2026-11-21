@@ -1,49 +1,63 @@
 # 🕵️ Smart Page Watcher & Extractor
 
-> أداة مراقبة وسحب بيانات ذكية للمتصفح — تفتح صفحة، تستخرج بياناتها، تقارنها بالسابق، وتُنبّهك عند حدوث تغيير.
+> A high-performance, intelligent web monitoring & data extraction tool built with **TypeScript**, **Playwright**, and **Node.js/Express**. It features an automated diff engine and a sleek **Glassmorphism Web Dashboard**.
 
 ---
 
-## ⚡ فكرة الأداة بـ 5 خطوات
+## ⚡ Architecture & How It Works
 
 ```
-index.ts
-  └─► watchRunner.ts        ← يُنسّق دورة العمل لكل هدف
-        ├─► targets.ts       ← يقرأ الروابط والمحددات
-        ├─► browserClient.ts ← يفتح المتصفح وينتظر ذكياً
-        ├─► pageExtractor.ts ← يستخرج البيانات ويُنظّفها
-        ├─► diffEngine.ts    ← يقارن الجديد بالسابق
-        ├─► snapshotStore.ts ← يحفظ اللقطة الجديدة
-        └─► notifier.ts      ← يطبع التقرير أو يُرسل تنبيهاً
+                        ┌───────────────────────────────┐
+                        │    Web Dashboard (:3000)      │
+                        │  (Modern Dark UI / Real-time) │
+                        └──────────────┬────────────────┘
+                                       │ REST API
+┌──────────────┐                       ▼
+│   index.ts   │ ─────►  ┌───────────────────────────────┐
+│ (CLI Runner) │         │     server.ts / watchRunner   │
+└──────────────┘         └──────────────┬────────────────┘
+                                        │
+         ┌──────────────────┬───────────┴──────────┬──────────────────┐
+         ▼                  ▼                      ▼                  ▼
+┌─────────────────┐ ┌───────────────┐   ┌────────────────────┐ ┌───────────────┐
+│ browserClient   │ │ pageExtractor │   │    diffEngine      │ │ snapshotStore │
+│   (Playwright   │ │ (Smart Clean/ │   │ (Change Detection/ │ │   & History   │
+│   Headless)     │ │   Selectors)  │   │   Price Drops)     │ │   (JSON/DB)   │
+└─────────────────┘ └───────────────┘   └────────────────────┘ └───────────────┘
 ```
 
 ---
 
-## 🗂️ هيكل المشروع
+## 🗂️ Project Structure
 
 ```
 page-watcher/
+├── public/
+│   └── index.html               # 🌐 Sleek Glassmorphism Dashboard
 ├── src/
+│   ├── api/
+│   │   ├── server.ts            # Express REST API & static server
+│   │   ├── targetsStore.ts      # Target persistence (data/targets.json)
+│   │   └── historyStore.ts      # Run history & event logging
 │   ├── config/
-│   │   └── targets.ts           # ← أضف أهدافك هنا
+│   │   └── targets.ts           # Code-based targets configuration
 │   ├── types/
-│   │   └── watcher.types.ts     # Interfaces & Types
+│   │   └── watcher.types.ts     # Strongly-typed Interfaces & Types
 │   ├── browser/
-│   │   └── browserClient.ts     # Playwright controller
+│   │   └── browserClient.ts     # Playwright browser lifecycle & navigation
 │   ├── extractor/
-│   │   └── pageExtractor.ts     # Data extraction & cleaning
+│   │   └── pageExtractor.ts     # Data extraction & price cleaning
 │   ├── diff/
-│   │   └── diffEngine.ts        # Change detection
+│   │   └── diffEngine.ts        # Change detection & comparison engine
 │   ├── storage/
-│   │   └── snapshotStore.ts     # JSON persistence
+│   │   └── snapshotStore.ts     # Snapshot persistence (JSON storage)
 │   ├── notifier/
-│   │   └── notifier.ts          # Terminal output & Webhook
+│   │   └── notifier.ts          # Terminal reporter & Webhook notifier
 │   ├── runner/
-│   │   └── watchRunner.ts       # Orchestrator
-│   └── index.ts                 # Entry point
-├── data/
-│   └── snapshots.json           # (مُنشأ تلقائياً)
-├── .env.example
+│   │   └── watchRunner.ts       # Orchestrates full monitoring cycle
+│   └── index.ts                 # CLI entry point
+├── data/                        # Generated runtime data (targets, snapshots, history)
+├── .env.example                 # Environment variables template
 ├── .gitignore
 ├── package.json
 ├── tsconfig.json
@@ -52,96 +66,86 @@ page-watcher/
 
 ---
 
-## 🚀 طريقة التشغيل
+## 🚀 Getting Started
 
-### 1. تثبيت الاعتماديات
+### 1. Install Dependencies & Playwright Browser
 
 ```bash
 npm install
 npx playwright install chromium
 ```
 
-### 2. إعداد البيئة
+### 2. Configure Environment
 
 ```bash
 cp .env.example .env
-# عدّل .env حسب حاجتك
 ```
 
-### 3. إضافة أهدافك
+### 3. Run the Web Dashboard (Recommended)
 
-افتح `src/config/targets.ts` وأضف هدفاً:
-
-```typescript
-{
-  id: "my-product",
-  name: "My Product Watch",
-  url: "https://example.com/product/123",
-  fields: [
-    { name: "price",        selector: ".price",        type: "text" },
-    { name: "availability", selector: ".stock-status", type: "text" },
-  ],
-  alertCondition: "any_change",
-}
-```
-
-### 4. تشغيل الأداة
+To launch the visual dashboard:
 
 ```bash
-# وضع التطوير (بدون build)
+npm run ui
+```
+
+Then open your browser at: **`http://localhost:3000`**
+
+From the dashboard you can:
+- ➕ **Add new targets** visually with name, URL, and CSS selectors.
+- 🔍 **Run immediate checks** on any target with real-time feedback.
+- ⚡ **View detected changes** highlighted in red (previous) and green (new).
+- 📋 **Inspect activity logs** and execution summaries.
+
+### 4. Run via Terminal (Headless CLI)
+
+```bash
+# Development mode
 npm run dev
 
-# وضع الإنتاج
+# Production build
 npm run build
 npm start
 ```
 
 ---
 
-## ⚙️ متغيرات البيئة (.env)
+## 📡 REST API Reference
 
-| المتغير | الوصف | الافتراضي |
-|---------|-------|-----------|
-| `HEADLESS` | تشغيل المتصفح مخفياً | `true` |
-| `ELEMENT_TIMEOUT` | انتظار ظهور العنصر (ms) | `15000` |
-| `PAGE_TIMEOUT` | انتظار تحميل الصفحة (ms) | `30000` |
-| `SNAPSHOTS_PATH` | مسار ملف اللقطات | `./data/snapshots.json` |
-| `WEBHOOK_URL` | رابط Webhook للتنبيهات | (فارغ = معطّل) |
-
----
-
-## 📋 أنواع الحقول المدعومة
-
-| `type` | ما يستخرجه |
-|--------|-----------|
-| `text` | النص الداخلي للعنصر |
-| `innerHTML` | HTML الداخلية (للعناصر المعقدة) |
-| `href` | قيمة رابط `<a>` |
-| `src` | رابط صورة أو مورد |
-| `count` | عدد العناصر المطابقة للمحدد |
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/targets` | List all targets with their latest snapshot |
+| `POST` | `/api/targets` | Create a new target |
+| `DELETE` | `/api/targets/:id` | Remove a target |
+| `POST` | `/api/targets/:id/check` | Trigger an immediate check for a target |
+| `POST` | `/api/check-all` | Run checks on all configured targets |
+| `GET` | `/api/history` | Get recent activity and diff logs |
+| `GET` | `/api/status` | System health and status check |
 
 ---
 
-## 🔔 شروط التنبيه
+## 🔔 Alert Conditions
 
-| `alertCondition` | يُنبّه عند |
-|-----------------|-----------|
-| `any_change` *(افتراضي)* | أي تغيير في أي حقل |
-| `price_drop` | انخفاض قيمة حقل اسمه يحتوي على "price" |
-
----
-
-## 📌 ملاحظات للمطور
-
-- **اللقطات** تُحفظ في `data/snapshots.json` — يمكن حذف ملف الهدف لإعادة البدء من صفر.
-- **المتصفح**: يستخدم Chromium عبر Playwright — يمكن تغييره لـ Firefox أو WebKit في `browserClient.ts`.
-- **التوسع لاحقاً**: يمكن ربط هذه الأداة بـ React Dashboard أو قاعدة بيانات SQLite بدلاً من JSON.
+| Condition | Trigger |
+|---|---|
+| `any_change` *(default)* | Triggers when any tracked field is added, modified, or removed. |
+| `price_drop` | Triggers exclusively when numeric price decreases. |
 
 ---
 
-## 🧩 الخطوات القادمة (Roadmap)
+## ⚙️ Environment Variables (.env)
 
-- [ ] إضافة جدولة زمنية (`node-cron`) للفحص التلقائي كل X دقيقة
-- [ ] لوحة تحكم React لعرض الأهداف وسجل التغييرات
-- [ ] دعم SQLite بدلاً من JSON للمشاريع الكبيرة
-- [ ] تنبيهات بريد إلكتروني أو Telegram
+| Variable | Description | Default |
+|---|---|---|
+| `PORT` | Web Dashboard & API port | `3000` |
+| `HEADLESS` | Run Playwright browser headlessly | `true` |
+| `ELEMENT_TIMEOUT` | Element visibility timeout (ms) | `15000` |
+| `PAGE_TIMEOUT` | Page load timeout (ms) | `30000` |
+| `SNAPSHOTS_PATH` | Snapshot storage file path | `./data/snapshots.json` |
+| `WEBHOOK_URL` | Optional webhook endpoint for instant alerts | *(disabled)* |
+
+---
+
+## 🛡️ License
+
+MIT License. Designed and built with clean TypeScript architecture.
